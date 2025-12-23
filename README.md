@@ -61,19 +61,19 @@ Or edit `init_db.py` and re-run it.
 
 ## GitHub Actions
 
-Workflows run automatically and create/update GitHub Issues with results:
+All workflows run **Monday morning** and create GitHub Issues with results:
 
-| Workflow | Schedule | Creates Issue |
-|----------|----------|---------------|
-| `rugby_tv.yml` | Daily 6 AM UTC | `rugby-tv` label |
-| `rugby_events.yml` | Sunday 8 AM UTC | `rugby-events` label |
-| `rugby_pass.yml` | Sunday 9 AM UTC | `rugbypass` label |
+| Workflow | Time (UTC) | Issue Label | Description |
+|----------|------------|-------------|-------------|
+| `rugby_tv.yml` | Mon 5 AM | `rugby-tv` | TV schedules for the week |
+| `rugby_events.yml` | Mon 6 AM | `rugby-events` | Calendar fixtures for the week |
+| `rugby_pass.yml` | Mon 7 AM | `weekly-digest` | Combined digest + streaming links |
 
-Each workflow:
-- Runs the Python script
-- Creates a GitHub Issue with formatted results
-- Updates existing issue if one is already open (avoids spam)
-- Uses labels for easy filtering
+### How Issues Work
+- Creates a new issue each Monday with the week's rugby content
+- Previous week's digest is auto-closed
+- No issue created if no rugby found
+- Labels: `automated`, `weekly-digest`, `rugby-tv`, `rugby-events`
 
 ## Data Sources
 

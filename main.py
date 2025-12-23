@@ -82,12 +82,13 @@ def process_tv_sport(verbose: bool = False, days: int = 1):
         print()
     
     all_rugby_matches = []
+    seen = set()  # Deduplicate by channel + title + start time
     
     for day_offset in range(days):
         check_date = date.today() + timedelta(days=day_offset)
         date_str = check_date.strftime("%Y%m%d")
         
-        if verbose or days > 1:
+        if verbose:
             print(f"\n📅 {check_date.strftime('%A, %B %d, %Y')}")
         
         for channel in channels:
@@ -100,19 +101,33 @@ def process_tv_sport(verbose: bool = False, days: int = 1):
             epg_data = fetch_epg(channel_id, date_str, verbose=verbose)
             rugby_matches = search_rugby_in_epg(epg_data, channel_name)
             
-            if rugby_matches:
-                all_rugby_matches.extend(rugby_matches)
-                for match in rugby_matches:
-                    print(f"🏉 {match['channel']}: {match['title']}")
-                    print(f"   ⏰ {match['start']}")
-                    if match['description']:
-                        print(f"   📝 {match['description'][:80]}...")
+            for match in rugby_matches:
+                key = (match['channel'], match['title'], match['start'])
+                if key not in seen:
+                    seen.add(key)
+                    all_rugby_matches.append(match)
+    
+    # Sort by start time and group by date
+    all_rugby_matches.sort(key=lambda x: x['start'])
+    
+    if all_rugby_matches:
+        print(f"\n🏉 Rugby on TV ({len(all_rugby_matches)} broadcasts):\n")
+        current_date = None
+        for match in all_rugby_matches:
+            # Parse date from ISO format
+            match_date = match['start'][:10] if match['start'] else ""
+            if match_date != current_date:
+                current_date = match_date
+                print(f"📅 {current_date}")
+            
+            time_str = match['start'][11:16] if len(match['start']) > 16 else ""
+            print(f"   🏉 {time_str} [{match['channel']}] {match['title']}")
     
     print(f"\n{'─' * 50}")
     if not all_rugby_matches:
         print("No rugby programs found.")
     else:
-        print(f"✅ Total: {len(all_rugby_matches)} rugby programs found!")
+        print(f"✅ Total: {len(all_rugby_matches)} rugby broadcasts!")
 
 
 def fetch_ical_events(url: str, verbose: bool = False) -> list[dict]:
