@@ -33,7 +33,7 @@ jobs:
         echo "$OUTPUT" > tv_output.txt
         
         # Count unique rugby programs
-        COUNT=$(echo "$OUTPUT" | grep -c "🏉" || echo "0")
+        COUNT=$(echo "$OUTPUT" | grep -c "🏉" || true)
         echo "rugby_count=$COUNT" >> $GITHUB_OUTPUT
 
     - name: Create or update issue

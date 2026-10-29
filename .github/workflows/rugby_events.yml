@@ -33,7 +33,7 @@ jobs:
         echo "$OUTPUT" > events_output.txt
         
         # Count events (exclude the header emoji)
-        COUNT=$(echo "$OUTPUT" | grep -c "^   🏉" || echo "0")
+        COUNT=$(echo "$OUTPUT" | grep -c "^   🏉" || true)
         echo "event_count=$COUNT" >> $GITHUB_OUTPUT
 
     - name: Create or update issue
